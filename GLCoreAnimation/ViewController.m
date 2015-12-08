@@ -7,7 +7,8 @@
 //
 
 #import "ViewController.h"
-#import <Core>
+#import <QuartzCore/QuartzCore.h>
+
 @interface ViewController ()
 
 @end
@@ -81,11 +82,56 @@
     NSLog(@"animationId:%@",animationID);
 }
 - (IBAction)startAnimationBtn:(id)sender {
-    [self uiviewAnimationTest];
+//    [self uiviewAnimationTest];
+    [self coreAnimationTest];
 }
 
 - (void)coreAnimationTest{
-    CATransaction *animation = [CATransaction an]
+    CALayer *layer = [[CALayer alloc]init];
+    layer.backgroundColor = [UIColor redColor].CGColor;
+    layer.frame = CGRectMake(10, 10, 100, 100);
+    layer.cornerRadius = 2;
+    [self.view.layer addSublayer:layer];
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position"];
+    animation.fromValue = [NSValue valueWithCGPoint:layer.position];
+    
+    //position移动
+    CGPoint toPoint = layer.position;
+    toPoint.x += 100;
+    toPoint.y += 100;
+    animation.toValue = [NSValue valueWithCGPoint:toPoint];
+    animation.duration = 5;
+    animation.removedOnCompletion = NO;
+//    animation.fillMode = kCAFillModeForwards;
+    animation.autoreverses = YES;
+
+    //以x轴进行旋转
+    CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.x"];
+    rotateAnimation.fromValue = [NSNumber numberWithFloat:0.0];
+    rotateAnimation.toValue = [NSNumber numberWithFloat:6.0*M_PI];
+    rotateAnimation.duration = 3;
+
+    //长度缩放
+    CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale.x"];
+    scaleAnimation.duration = 2;
+    scaleAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+    scaleAnimation.toValue = [NSNumber numberWithFloat:2.6];
+    scaleAnimation.fillMode = kCAFillModeForwards;
+    
+    //
+//    [layer addAnimation:animation forKey:@"animation"];
+//    [layer addAnimation:rotateAnimation forKey:@"rotateAnimation"];
+//    [layer addAnimation:scaleAnimation forKey:@"scaleAnimation"];
+    
+    CAAnimationGroup *group = [CAAnimationGroup animation];
+    group.duration = 5;
+    group.fillMode = kCAFillModeForwards;
+    group.animations = [NSArray arrayWithObjects:animation,rotateAnimation,scaleAnimation, nil];
+    [layer addAnimation:group forKey:@"group"];
+    
+    
+
 }
 
 @end
