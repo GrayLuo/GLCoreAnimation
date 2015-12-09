@@ -21,13 +21,22 @@
                                     <action selector="startAnimationBtn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="CX1-Yu-YK9"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TsI-tu-bMn">
+                                <rect key="frame" x="90" y="500" width="141" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="KeyFrame Animation"/>
+                                <connections>
+                                    <action selector="keyFrameAnimation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4Rh-Sd-7cv"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="222.93333333333334" y="274.06"/>
+            <point key="canvasLocation" x="222" y="274"/>
         </scene>
     </scenes>
 </document>

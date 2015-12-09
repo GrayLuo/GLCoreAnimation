@@ -8,9 +8,10 @@
 
 #import "ViewController.h"
 #import <QuartzCore/QuartzCore.h>
-
+#import "GLCustomView.h"
 @interface ViewController ()
-
+@property (strong,nonatomic) NSArray *imgs;
+@property (strong, nonatomic) UIImageView *imageView;
 @end
 
 @implementation ViewController
@@ -19,6 +20,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
 //    [self uiviewAnimationTest];
+    
+    [self transitionTestInit];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -83,9 +86,42 @@
 }
 - (IBAction)startAnimationBtn:(id)sender {
 //    [self uiviewAnimationTest];
-    [self coreAnimationTest];
+//    [self coreAnimationTest];
+    [self anchorTest];
 }
 
+- (void)anchorTest{
+    UIView *contentView = [[UIView alloc]initWithFrame:CGRectMake(100, 100, 200, 200)];
+    contentView.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:contentView];
+    
+    CALayer *layer = [[CALayer alloc]init];
+    layer.backgroundColor = [UIColor redColor].CGColor;
+    layer.frame = CGRectMake(0, 0, 100, 100);
+    [contentView.layer addSublayer:layer];
+
+    NSLog(@"[1]layer position:%@",NSStringFromCGPoint(layer.position));
+    NSLog(@"[1]layer anchorPoint:%@",NSStringFromCGPoint(layer.anchorPoint));
+
+    
+    
+    layer.anchorPoint = CGPointMake(1, 1);
+    
+    CALayer *center = [[CALayer alloc]init];
+    center.backgroundColor = [UIColor blackColor].CGColor;
+    center.frame = CGRectMake(0, 0, 10, 10);
+    center.position = layer.position;
+    [layer addSublayer:center];
+
+    
+    NSLog(@"[2]layer position:%@",NSStringFromCGPoint(layer.position));
+    NSLog(@"[2]layer anchorPoint:%@",NSStringFromCGPoint(layer.anchorPoint));
+
+    
+    
+}
+
+//基本动画
 - (void)coreAnimationTest{
     CALayer *layer = [[CALayer alloc]init];
     layer.backgroundColor = [UIColor redColor].CGColor;
@@ -129,9 +165,73 @@
     group.fillMode = kCAFillModeForwards;
     group.animations = [NSArray arrayWithObjects:animation,rotateAnimation,scaleAnimation, nil];
     [layer addAnimation:group forKey:@"group"];
+}
+//关键帧动画
+- (IBAction)keyFrameAnimation:(id)sender {
+    CALayer *layer = [[CALayer alloc]init];
+    layer.frame = CGRectMake(40, 40, 40, 40);
+//    layer.bounds = CGRectMake(40, 40, 40, 40);
+    layer.contents = (__bridge id _Nullable)([UIImage imageNamed:@"twitter_bird_32px_577773_easyicon.net.png"].CGImage);
+    [self.view.layer addSublayer:layer];
     
+    CAKeyframeAnimation *keyFrameAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    NSValue *key1 = [NSValue valueWithCGPoint:layer.position];
+    NSValue *key2 = [NSValue valueWithCGPoint:CGPointMake(80,100)];
+    NSValue *key3 = [NSValue valueWithCGPoint:CGPointMake(100,120)];
+    NSValue *key4 = [NSValue valueWithCGPoint:CGPointMake(80,140)];
+    NSValue *key5 = [NSValue valueWithCGPoint:CGPointMake(60,160)];
+    NSValue *key6 = [NSValue valueWithCGPoint:CGPointMake(180,200)];
     
+    keyFrameAnimation.duration = 5;
+    keyFrameAnimation.beginTime = CACurrentMediaTime() + 2;//延时
+    
+    keyFrameAnimation.values = @[key1,key2,key3,key4,key5,key6];
+    
+    [layer addAnimation:keyFrameAnimation forKey:@"keyFrameTest"];
+    
+}
 
+- (void)customLayerTest{
+    GLCustomView *customView = [[GLCustomView alloc]initWithFrame:CGRectMake(40, 40, 400, 400)];
+    customView.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:customView];
+}
+
+- (void)transitionTestInit{
+    _imgs = @[@"1.jpg",@"2.jpg",@"3.jpg"];
+    _imageView = [[UIImageView alloc]initWithFrame:CGRectMake(40, 40, 400, 200)];
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    _imageView.image = [UIImage imageNamed:@"0.jpg"];
+    [self.view addSubview:_imageView];
+    
+    UISwipeGestureRecognizer *leftSwipeGesture=[[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(leftSwipe:)];
+    leftSwipeGesture.direction=UISwipeGestureRecognizerDirectionLeft;
+    [self.view addGestureRecognizer:leftSwipeGesture];
+    
+    UISwipeGestureRecognizer *rightSwipeGesture=[[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(rightSwipe:)];
+    rightSwipeGesture.direction=UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:rightSwipeGesture];
+}
+
+-(void)leftSwipe:(UISwipeGestureRecognizer *)gesture{
+    [self transitionText];
+}
+
+-(void)rightSwipe:(UISwipeGestureRecognizer *)gesture{
+    [self transitionText];
+}
+
+- (void)transitionText{
+    CATransition *transition = [[CATransition alloc]init];
+    transition.type = @"cube";
+    transition.subtype = kCATransitionFromLeft;
+    transition.duration = 1.0f;
+    
+    _imageView.image = [self getImage];
+    [_imageView.layer addAnimation:transition forKey:@"transitionAnimation"];
+}
+- (UIImage *)getImage{
+    return [UIImage imageNamed:_imgs[arc4random() % _imgs.count]];
 }
 
 @end
